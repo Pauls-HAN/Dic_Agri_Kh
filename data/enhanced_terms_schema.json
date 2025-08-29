@@ -1,0 +1,162 @@
+{
+  "schema_version": "2.0",
+  "description": "캄보디아 농업용어 8000단어 확장 스키마 - 모바일 학습 앱용",
+  "target_count": 8000,
+  "fields": {
+    "id": {
+      "type": "integer",
+      "description": "고유 식별자",
+      "required": true,
+      "auto_increment": true
+    },
+    "korean_term": {
+      "type": "string",
+      "description": "한국어 농업용어",
+      "required": true,
+      "max_length": 100
+    },
+    "khmer_term": {
+      "type": "string", 
+      "description": "크메르어(캄보디아어) 농업용어",
+      "required": true,
+      "max_length": 100
+    },
+    "khmer_pronunciation": {
+      "type": "string",
+      "description": "크메르어 한글 발음 표기",
+      "required": true,
+      "max_length": 150
+    },
+    "english_term": {
+      "type": "string",
+      "description": "영어 농업용어",
+      "required": false,
+      "max_length": 100
+    },
+    "category": {
+      "type": "string",
+      "description": "농업 분야 카테고리",
+      "required": true,
+      "enum": [
+        "작물재배", "축산업", "농기계", "토양관리", "비료", "병해충방제",
+        "수확후처리", "저장기술", "가공기술", "유통", "농업정책", "농업경영",
+        "원예", "임업", "수산업", "농업기술", "수자원관리", "농업시설",
+        "종자기술", "농약", "유기농업", "스마트농업", "농업환경", "기후변화대응",
+        "농촌개발", "농업교육", "농업금융", "농업보험", "농산물품질", "농업안전"
+      ]
+    },
+    "korean_definition": {
+      "type": "text",
+      "description": "한국어 용어 설명",
+      "required": true
+    },
+    "khmer_definition": {
+      "type": "text",
+      "description": "크메르어 용어 설명",
+      "required": true
+    },
+    "korean_example": {
+      "type": "text",
+      "description": "한국어 사용 예문",
+      "required": true
+    },
+    "khmer_example": {
+      "type": "text",
+      "description": "크메르어 사용 예문",
+      "required": true
+    },
+    "khmer_example_pronunciation": {
+      "type": "text",
+      "description": "크메르어 예문 한글 발음",
+      "required": true
+    },
+    "english_example": {
+      "type": "text",
+      "description": "영어 사용 예문",
+      "required": false
+    },
+    "image_url": {
+      "type": "string",
+      "description": "관련 이미지 URL",
+      "required": false
+    },
+    "audio_url_khmer": {
+      "type": "string",
+      "description": "크메르어 발음 오디오 URL",
+      "required": false
+    },
+    "audio_url_korean": {
+      "type": "string",
+      "description": "한국어 발음 오디오 URL",
+      "required": false
+    },
+    "frequency_level": {
+      "type": "integer",
+      "description": "사용 빈도 수준 (1-5, 5가 가장 자주 사용)",
+      "required": true,
+      "min": 1,
+      "max": 5,
+      "default": 3
+    },
+    "learning_order": {
+      "type": "integer",
+      "description": "학습 순서 (일일 학습용)",
+      "required": true,
+      "min": 1
+    },
+    "related_terms": {
+      "type": "array",
+      "description": "관련 용어 ID 목록",
+      "required": false
+    },
+    "difficulty_level": {
+      "type": "string",
+      "description": "용어 난이도",
+      "enum": ["기초", "중급", "고급"],
+      "default": "중급"
+    },
+    "tags": {
+      "type": "array",
+      "description": "검색용 태그",
+      "required": false
+    },
+    "mnemonics": {
+      "type": "text",
+      "description": "암기 팁 또는 연상법",
+      "required": false
+    },
+    "cultural_notes": {
+      "type": "text",
+      "description": "문화적 배경 설명",
+      "required": false
+    },
+    "created_date": {
+      "type": "datetime",
+      "description": "생성일",
+      "auto_generated": true
+    },
+    "updated_date": {
+      "type": "datetime", 
+      "description": "수정일",
+      "auto_generated": true
+    },
+    "verified": {
+      "type": "boolean",
+      "description": "검증 완료 여부",
+      "default": false
+    },
+    "last_reviewed": {
+      "type": "datetime",
+      "description": "마지막 검토일",
+      "required": false
+    }
+  },
+  "learning_features": {
+    "daily_learning_size": 10,
+    "categories_count": 30,
+    "difficulty_progression": ["기초", "중급", "고급"],
+    "frequency_based_priority": true,
+    "spaced_repetition": true,
+    "multimedia_support": true
+  }
+}
