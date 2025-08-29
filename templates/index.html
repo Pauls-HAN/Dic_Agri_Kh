@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}캄보디아 농업용어 사전 - 홈{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 메인 헤더 -->
+    <div class="col-12 mb-4">
+        <div class="jumbotron bg-success text-white p-5 rounded">
+            <h1 class="display-4">
+                <i class="fas fa-seedling me-3"></i>
+                캄보디아 농업용어 사전
+            </h1>
+            <p class="lead">한국어-크메르어 농업 전문용어 3000단어 프로젝트</p>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.3);">
+            <p>농업 분야의 한국어와 캄보디아어(크메르어) 전문용어를 체계적으로 정리한 사전입니다.</p>
+            <a class="btn btn-light btn-lg" href="{{ url_for('search') }}" role="button">
+                <i class="fas fa-search me-2"></i>용어 검색하기
+            </a>
+            <a class="btn btn-outline-light btn-lg ms-2" href="{{ url_for('add_term') }}" role="button">
+                <i class="fas fa-plus me-2"></i>새 용어 추가
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 프로젝트 현황 -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>프로젝트 진행 현황
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h3 class="text-primary">{{ stats.total_terms }}</h3>
+                            <p class="text-muted">등록된 용어</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h3 class="text-success">{{ stats.verified_terms }}</h3>
+                            <p class="text-muted">검증 완료</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h3 class="text-warning">{{ stats.unverified_terms }}</h3>
+                            <p class="text-muted">검증 대기</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h3 class="text-info">{{ stats.remaining }}</h3>
+                            <p class="text-muted">남은 목표</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 진행률 바 -->
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">전체 진행률</span>
+                        <span class="badge bg-primary">{{ "%.1f"|format(stats.progress_percentage) }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ stats.progress_percentage }}%"
+                             aria-valuenow="{{ stats.progress_percentage }}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <small class="text-muted">목표: 3,000개 농업용어</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 카테고리 분포 -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tags me-2"></i>카테고리별 분포
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if stats.category_distribution %}
+                    {% for category, count in stats.category_distribution.items() %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ category }}</span>
+                        <span class="badge bg-secondary">{{ count }}개</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center">등록된 용어가 없습니다.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 최근 추가된 용어 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock me-2"></i>최근 추가된 용어
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_terms %}
+                    <div class="row">
+                        {% for term in recent_terms %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-left-success">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ term.korean_term }}</h6>
+                                    <p class="card-text text-primary">{{ term.khmer_term }}</p>
+                                    {% if term.english_term %}
+                                    <p class="card-text text-muted small">{{ term.english_term }}</p>
+                                    {% endif %}
+                                    <span class="badge bg-light text-dark">{{ term.category }}</span>
+                                    <a href="{{ url_for('view_term', term_id=term.id) }}" class="btn btn-sm btn-outline-primary mt-2">
+                                        자세히 보기
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('search') }}" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>전체 용어 검색
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">아직 등록된 용어가 없습니다</h5>
+                        <p class="text-muted">첫 번째 농업용어를 추가해보세요!</p>
+                        <a href="{{ url_for('add_term') }}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>용어 추가하기
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 프로젝트 소개 -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>프로젝트 소개
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-bullseye me-2 text-primary"></i>프로젝트 목표</h6>
+                        <ul class="list-unstyled ms-4">
+                            <li>• 농업 분야 한국어-크메르어 용어 3,000개 수집</li>
+                            <li>• 체계적인 분류 및 정의 제공</li>
+                            <li>• 농업 교육 및 기술 전수 지원</li>
+                            <li>• 한-캄 농업 협력 증진</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-cogs me-2 text-success"></i>주요 기능</h6>
+                        <ul class="list-unstyled ms-4">
+                            <li>• 다중 언어 검색 (한국어/크메르어/영어)</li>
+                            <li>• 카테고리별 분류 및 필터링</li>
+                            <li>• 용어 추가, 수정, 삭제 기능</li>
+                            <li>• 통계 및 진행률 추적</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}용어 추가 - 캄보디아 농업용어 사전{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h2><i class="fas fa-plus me-2"></i>새 농업용어 추가</h2>
+        <p class="text-muted">한국어-크메르어 농업용어를 추가합니다. 필수 항목을 모두 입력해주세요.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <form method="POST" action="{{ url_for('add_term') }}">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-edit me-2"></i>용어 정보 입력
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- 기본 용어 정보 -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-language me-2"></i>기본 용어 정보
+                            </h6>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="korean_term" class="form-label">
+                                한국어 용어 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="korean_term" name="korean_term" 
+                                   required placeholder="예: 벼">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="khmer_term" class="form-label">
+                                크메르어 용어 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="khmer_term" name="khmer_term" 
+                                   required placeholder="예: ស្រូវ">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="english_term" class="form-label">영어 용어 (선택)</label>
+                            <input type="text" class="form-control" id="english_term" name="english_term" 
+                                   placeholder="예: rice plant">
+                        </div>
+                    </div>
+
+                    <!-- 분류 정보 -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-tags me-2"></i>분류 정보
+                            </h6>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">
+                                카테고리 <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">카테고리 선택</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}">{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="difficulty_level" class="form-label">난이도</label>
+                            <select class="form-select" id="difficulty_level" name="difficulty_level">
+                                <option value="기초">기초</option>
+                                <option value="중급" selected>중급</option>
+                                <option value="고급">고급</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="tags" class="form-label">태그 (선택)</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   placeholder="쉼표로 구분하여 입력 (예: 곡물, 주식, 논농사)">
+                            <div class="form-text">검색에 도움이 되는 키워드를 추가하세요.</div>
+                        </div>
+                    </div>
+
+                    <!-- 설명 정보 -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-text me-2"></i>설명 정보
+                            </h6>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="korean_definition" class="form-label">
+                                한국어 설명 <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="korean_definition" name="korean_definition" 
+                                      rows="3" required 
+                                      placeholder="한국어로 용어의 의미와 특징을 설명해주세요."></textarea>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="khmer_definition" class="form-label">
+                                크메르어 설명 <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="khmer_definition" name="khmer_definition" 
+                                      rows="3" required 
+                                      placeholder="크메르어로 용어의 의미와 특징을 설명해주세요."></textarea>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="usage_example" class="form-label">사용 예시 (선택)</label>
+                            <textarea class="form-control" id="usage_example" name="usage_example" 
+                                      rows="2" 
+                                      placeholder="용어가 사용되는 예시 문장을 입력해주세요."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('search') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>취소
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>용어 추가
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- 도움말 사이드바 -->
+    <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>입력 도움말
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6><i class="fas fa-star text-warning me-2"></i>필수 항목</h6>
+                <ul class="list-unstyled ms-3 mb-3">
+                    <li>• 한국어 용어</li>
+                    <li>• 크메르어 용어</li>
+                    <li>• 카테고리</li>
+                    <li>• 한국어 설명</li>
+                    <li>• 크메르어 설명</li>
+                </ul>
+
+                <h6><i class="fas fa-lightbulb text-warning me-2"></i>작성 팁</h6>
+                <ul class="list-unstyled ms-3 mb-3">
+                    <li>• 정확한 번역 확인</li>
+                    <li>• 간결하고 명확한 설명</li>
+                    <li>• 적절한 카테고리 선택</li>
+                    <li>• 검색 키워드 태그 추가</li>
+                </ul>
+
+                <h6><i class="fas fa-list text-primary me-2"></i>주요 카테고리</h6>
+                <div class="row">
+                    <div class="col-12">
+                        <small class="text-muted">
+                            작물재배, 축산업, 농기계, 토양, 비료, 병해충, 
+                            수확, 저장, 가공, 유통, 농업정책, 농업경영, 
+                            원예, 임업, 수산업, 농업기술, 수자원, 농업시설, 
+                            종자, 농약 등
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 진행 현황 -->
+        <div class="card mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>프로젝트 현황
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-2">
+                    <i class="fas fa-bullseye fa-2x text-primary mb-2"></i>
+                </div>
+                <h6>목표: 3,000개 용어</h6>
+                <p class="text-muted mb-0">여러분의 기여가 프로젝트를 완성시킵니다!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 폼 유효성 검사
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        const requiredFields = ['korean_term', 'khmer_term', 'category', 'korean_definition', 'khmer_definition'];
+        let isValid = true;
+        
+        requiredFields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('필수 항목을 모두 입력해주세요.');
+        }
+    });
+    
+    // 실시간 유효성 검사
+    const requiredFields = ['korean_term', 'khmer_term', 'category', 'korean_definition', 'khmer_definition'];
+    requiredFields.forEach(fieldName => {
+        const field = document.getElementById(fieldName);
+        field.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+
+// 태그 입력 도움말
+document.getElementById('tags').addEventListener('input', function() {
+    const tags = this.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+    if (tags.length > 0) {
+        console.log('입력된 태그:', tags);
+    }
+});
+</script>
+{% endblock %}

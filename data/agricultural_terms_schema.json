@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "description": "캄보디아 농업용어 3000단어 데이터 스키마",
+  "fields": {
+    "id": {
+      "type": "integer",
+      "description": "고유 식별자",
+      "required": true,
+      "auto_increment": true
+    },
+    "korean_term": {
+      "type": "string",
+      "description": "한국어 농업용어",
+      "required": true,
+      "max_length": 100
+    },
+    "khmer_term": {
+      "type": "string", 
+      "description": "크메르어(캄보디아어) 농업용어",
+      "required": true,
+      "max_length": 100
+    },
+    "english_term": {
+      "type": "string",
+      "description": "영어 농업용어",
+      "required": false,
+      "max_length": 100
+    },
+    "category": {
+      "type": "string",
+      "description": "농업 분야 카테고리",
+      "required": true,
+      "enum": [
+        "작물재배", "축산업", "농기계", "토양", "비료", "병해충",
+        "수확", "저장", "가공", "유통", "농업정책", "농업경영",
+        "원예", "임업", "수산업", "농업기술", "기타"
+      ]
+    },
+    "korean_definition": {
+      "type": "text",
+      "description": "한국어 용어 설명",
+      "required": true
+    },
+    "khmer_definition": {
+      "type": "text",
+      "description": "크메르어 용어 설명",
+      "required": true
+    },
+    "usage_example": {
+      "type": "text",
+      "description": "사용 예시",
+      "required": false
+    },
+    "related_terms": {
+      "type": "array",
+      "description": "관련 용어 ID 목록",
+      "required": false
+    },
+    "difficulty_level": {
+      "type": "string",
+      "description": "용어 난이도",
+      "enum": ["기초", "중급", "고급"],
+      "default": "중급"
+    },
+    "tags": {
+      "type": "array",
+      "description": "검색용 태그",
+      "required": false
+    },
+    "created_date": {
+      "type": "datetime",
+      "description": "생성일",
+      "auto_generated": true
+    },
+    "updated_date": {
+      "type": "datetime", 
+      "description": "수정일",
+      "auto_generated": true
+    },
+    "verified": {
+      "type": "boolean",
+      "description": "검증 완료 여부",
+      "default": false
+    }
+  }
+}

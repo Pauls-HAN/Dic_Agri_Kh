@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}용어 검색 - 캄보디아 농업용어 사전{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h2><i class="fas fa-search me-2"></i>농업용어 검색</h2>
+        <p class="text-muted">한국어, 크메르어, 영어로 농업용어를 검색할 수 있습니다.</p>
+    </div>
+</div>
+
+<!-- 검색 폼 -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-filter me-2"></i>검색 옵션
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('search') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="keyword" class="form-label">키워드</label>
+                            <input type="text" class="form-control" id="keyword" name="keyword" 
+                                   value="{{ search_params.keyword }}" 
+                                   placeholder="한국어, 크메르어, 영어로 검색...">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="category" class="form-label">카테고리</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">전체 카테고리</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if search_params.category == cat %}selected{% endif %}>
+                                    {{ cat }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="difficulty" class="form-label">난이도</label>
+                            <select class="form-select" id="difficulty" name="difficulty">
+                                <option value="">전체 난이도</option>
+                                <option value="기초" {% if search_params.difficulty == '기초' %}selected{% endif %}>기초</option>
+                                <option value="중급" {% if search_params.difficulty == '중급' %}selected{% endif %}>중급</option>
+                                <option value="고급" {% if search_params.difficulty == '고급' %}selected{% endif %}>고급</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="verified_only" name="verified_only" 
+                                       {% if search_params.verified_only %}checked{% endif %}>
+                                <label class="form-check-label" for="verified_only">
+                                    검증된 용어만 표시
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>검색
+                            </button>
+                            <a href="{{ url_for('search') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-2"></i>초기화
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 검색 결과 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>검색 결과
+                </h5>
+                <span class="badge bg-light text-dark">{{ results|length }}개 용어</span>
+            </div>
+            <div class="card-body">
+                {% if results %}
+                    <div class="row">
+                        {% for term in results %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 term-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title text-primary">{{ term.korean_term }}</h6>
+                                        {% if term.verified %}
+                                        <i class="fas fa-check-circle text-success" title="검증 완료"></i>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="card-text mb-2">
+                                        <strong class="text-info">{{ term.khmer_term }}</strong>
+                                    </p>
+                                    
+                                    {% if term.english_term %}
+                                    <p class="card-text text-muted small mb-2">{{ term.english_term }}</p>
+                                    {% endif %}
+                                    
+                                    <p class="card-text">
+                                        <small class="text-muted">{{ term.korean_definition[:100] }}{% if term.korean_definition|length > 100 %}...{% endif %}</small>
+                                    </p>
+                                    
+                                    <div class="mb-2">
+                                        <span class="badge bg-secondary me-1">{{ term.category }}</span>
+                                        <span class="badge bg-outline-primary">{{ term.difficulty_level }}</span>
+                                    </div>
+                                    
+                                    {% if term.tags %}
+                                    <div class="mb-2">
+                                        {% for tag in term.tags %}
+                                        <span class="badge bg-light text-dark me-1">#{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">ID: {{ term.id }}</small>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('view_term', term_id=term.id) }}" 
+                                               class="btn btn-outline-primary" title="자세히 보기">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('edit_term', term_id=term.id) }}" 
+                                               class="btn btn-outline-warning" title="편집">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- 추가 작업 버튼 -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('add_term') }}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>새 용어 추가
+                        </a>
+                    </div>
+                    
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">검색 결과가 없습니다</h5>
+                        <p class="text-muted">다른 검색어나 필터 조건을 시도해보세요.</p>
+                        {% if search_params.keyword or search_params.category or search_params.difficulty %}
+                        <a href="{{ url_for('search') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-redo me-2"></i>모든 용어 보기
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('add_term') }}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>새 용어 추가
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 검색 팁 -->
+{% if not results %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>검색 팁
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>한국어, 크메르어, 영어 모두 검색 가능</li>
+                            <li><i class="fas fa-check text-success me-2"></i>부분 검색어로도 찾을 수 있음</li>
+                            <li><i class="fas fa-check text-success me-2"></i>카테고리별 필터링 활용</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>난이도별 정렬 가능</li>
+                            <li><i class="fas fa-check text-success me-2"></i>태그 검색 지원</li>
+                            <li><i class="fas fa-check text-success me-2"></i>검증된 용어만 필터링 가능</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 검색 폼 자동 제출 (카테고리나 난이도 변경 시)
+document.getElementById('category').addEventListener('change', function() {
+    this.form.submit();
+});
+
+document.getElementById('difficulty').addEventListener('change', function() {
+    this.form.submit();
+});
+
+// 용어 카드 호버 효과
+document.addEventListener('DOMContentLoaded', function() {
+    const termCards = document.querySelectorAll('.term-card');
+    termCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+    });
+});
+</script>
+{% endblock %}
