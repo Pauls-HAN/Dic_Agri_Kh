@@ -58,6 +58,21 @@ def agricultural_learning_v3_5000_optimized():
 def agri_search():
     """Agri-Search: 캄보디아 농업용어 검색 시스템"""
     return send_from_directory(os.path.dirname(app.root_path), 'Agri-search.html')
+
+@app.route('/cambodia-agri-app')
+def cambodia_agri_app():
+    """Cambodia Agri App: Unity용 완벽한 5,000개 농업용어 앱"""
+    return send_from_directory(os.path.dirname(app.root_path), 'Cambodia_Agri_App_5000.html')
+
+@app.route('/download/cambodia-agri-app')
+def download_cambodia_agri_app():
+    """Cambodia Agri App 다운로드"""
+    return send_from_directory(
+        os.path.dirname(app.root_path), 
+        'Cambodia_Agri_App_5000.html',
+        as_attachment=True,
+        download_name='Cambodia_Agri_App_5000.html'
+    )
 @app.route('/api/daily_words')
 def api_daily_words():
     """일일 학습 단어 API"""
