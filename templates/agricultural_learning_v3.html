@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캄보디아 농업용어 학습 V3 (모바일 최적화)</title>
+    
+    <link rel="manifest" href="data:application/manifest+json,{
+        &quot;name&quot;: &quot;캄보디아 농업용어 학습 V3&quot;,
+        &quot;short_name&quot;: &quot;농업용어 V3&quot;,
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#f1f8e9&quot;,
+        &quot;theme_color&quot;: &quot;#4CAF50&quot;
+    }">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap');
+        
+        :root {
+            --primary-color: #4CAF50; --primary-dark: #2E7D32; --primary-light: #C8E6C9;
+            --secondary-color: #f1f8e9; --font-color: #212121; --border-color: #e0e0e0;
+            --white-bg: #ffffff; --light-gray: #f5f5f5; --accent-color: #FF6B35;
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--font-color); margin: 0;
+        }
+        .container {
+            max-width: 800px; margin: 0 auto; background-color: var(--white-bg); padding: 15px; min-height: 100vh;
+        }
+        .header {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+            padding-bottom: 15px; border-bottom: 2px solid var(--primary-color); margin-bottom: 20px;
+        }
+        .header h1 { color: var(--primary-dark); margin: 0; font-size: 1.5em; text-align: center; }
+        .header .subtitle { color: #555; margin: 0; font-size: 0.9em; text-align: center; }
+        
+        /* Category Section */
+        .category-section {
+             padding-bottom: 15px;
+        }
+        .category-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+        }
+        .category-btn {
+            background-color: var(--white-bg); color: #333; border: 1px solid var(--border-color);
+            padding: 8px 15px; border-radius: 20px; font-size: 14px; cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-btn:hover { background-color: #f0f0f0; }
+        .category-btn.active {
+            background-color: var(--primary-color); color: white; border-color: var(--primary-dark);
+            font-weight: bold;
+        }
+        .category-btn .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .category-btn .count { 
+            font-size: 0.9em; 
+            opacity: 0.7; 
+            margin-left: 8px;
+            background-color: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        .category-btn.active .count {
+            background-color: rgba(255,255,255,0.2);
+        }
+        #all-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        #all-category-btn {
+            min-width: 250px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        /* Search Section */
+        .search-box {
+            width: 100%; padding: 12px 15px; margin: 10px 0 20px 0; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 16px; box-sizing: border-box;
+        }
+
+        /* Quiz Area Grid */
+        .quiz-area-grid {
+            display: grid; grid-template-columns: 1fr;
+            gap: 15px; margin-bottom: 20px;
+        }
+        .quiz-panel {
+            background-color: var(--white-bg); border: 1px solid #e8f5e9;
+            border-radius: 12px; padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .quiz-panel h2 {
+            font-size: 1.1em; color: var(--font-color); margin: 0 0 10px 0;
+            border-bottom: 2px solid #e8f5e9; padding-bottom: 8px;
+        }
+
+        /* 1. Flashcard Panel (오늘의 단어) */
+        .flashcard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline; 
+            margin-bottom: 10px;
+        }
+        .quiz-card {
+            background-color: #fafff5; border-radius: 10px; padding: 15px; min-height: 100px;
+            cursor: pointer; perspective: 1000px;
+        }
+        .quiz-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .quiz-card.flipped .quiz-card-inner { transform: rotateY(180deg); }
+        .quiz-card-front, .quiz-card-back {
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden;
+            backface-visibility: hidden; display: flex; flex-direction: column; 
+            align-items: center;
+            padding: 10px; box-sizing: border-box; text-align: center;
+            justify-content: flex-start;
+            padding-top: 15px;
+        }
+        .quiz-card-back { transform: rotateY(180deg); }
+        .term-khmer {
+            font-family: 'Battambang', sans-serif;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-dark);
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        .term-pronunciation { font-size: 1em; color: #555; font-style: italic; }
+        .term-meaning-ko, .term-meaning-en { font-size: 1.1em; font-weight: 500; margin: 4px 0; }
+        .term-category {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
+        
+        /* 2. Interactive Quiz Panel (단어 맞추기) */
+        .interactive-question { font-weight: 500; margin-bottom: 10px; text-align: center;}
+        .answer-input { width: 100%; padding: 10px; font-size: 1em; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: 'Battambang', sans-serif; }
+        .feedback { text-align: center; font-weight: bold; min-height: 20px; padding: 5px 0; }
+        .feedback.correct { color: var(--primary-dark); }
+        .feedback.incorrect { color: #D32F2F; }
+
+        /* 3. Example Panel (오늘의 예문) */
+        .example-list { max-height: 220px; overflow-y: auto; padding-right: 5px; } 
+        .example-item { margin-bottom: 12px; }
+        .example-item .example-kh { font-family: 'Battambang', sans-serif; font-size: 1.1em; color: var(--primary-dark); }
+        .example-item .example-pron { font-size: 0.9em; color: #777; font-style: italic; }
+        .example-item .example-ko { font-size: 0.9em; }
+        .no-examples { color: #999; text-align: center; padding: 20px; }
+        
+        .tts-icon { cursor: pointer; margin-left: 5px; font-size: 0.8em; color: #aaa; }
+        .quiz-button {
+            background-color: var(--primary-color); color: white; border: none; padding: 8px 15px;
+            border-radius: 8px; font-size: 14px; cursor: pointer; transition: background-color 0.3s;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: linear-gradient(135deg, var(--primary-light), #E8F5E8);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .progress-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .progress-stats {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.6s ease;
+        }
+
+        /* Results Area */
+        #results-count { text-align: right; color: #616161; margin-bottom: 10px; font-size: 14px; }
+        .table-container { 
+            max-height: none; 
+            overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; 
+        }
+        .term-table { width: 100%; border-collapse: collapse; }
+        .term-table th { background-color: #f1f8e9; color: var(--primary-dark); position: sticky; top: 0; z-index: 1; text-align: center; font-size: 0.9em; }
+        .term-table th, .term-table td { border-bottom: 1px solid var(--border-color); padding: 12px 8px; text-align: left; }
+        .term-table tr:hover, .term-table tr.selected { background-color: var(--primary-light); cursor: pointer; }
+        .khmer-cell { font-family: 'Battambang', sans-serif; font-size: 1.2em; font-weight: 700; }
+        .ko-cell { font-weight: 500; }
+
+        /* Pagination Controls */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .pagination-controls button {
+            background-color: var(--white-bg);
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .pagination-controls button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .pagination-controls .page-info {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Statistics Panel */
+        .stats-panel {
+            background: linear-gradient(135deg, #E3F2FD, #F3E5F5);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+        }
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .stat-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        @media (min-width: 992px) {
+            .quiz-area-grid { grid-template-columns: 0.8fr 0.96fr 1.44fr; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌾 캄보디아 농업용어 학습</h1>
+            <p class="subtitle">캄보디아 농업 발전을 위한 전문용어 학습 플랫폼 (8,000+ 단어)</p>
+        </header>
+
+        <!-- Progress Section -->
+        <section class="progress-section">
+            <div class="progress-header">
+                <div class="progress-title">학습 진행 현황</div>
+                <div class="progress-stats" id="progressStats">1,400 / 8,000 단어 (17.5%)</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 17.5%"></div>
+            </div>
+        </section>
+
+        <!-- Statistics Panel -->
+        <section class="stats-panel">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalTerms">1,400</div>
+                    <div class="stat-label">총 용어수</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCategories">30</div>
+                    <div class="stat-label">카테고리</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="todayLearned">0</div>
+                    <div class="stat-label">오늘 학습</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="streakDays">0</div>
+                    <div class="stat-label">연속일수</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category-section">
+            <div id="category-container" class="category-grid"></div>
+            <div id="all-button-container"></div>
+        </section>
+
+        <section class="search-section">
+            <input type="text" id="searchInput" class="search-box" placeholder="전체 또는 선택된 카테고리에서 검색 (예: 벼, 농기계, 비료)">
+        </section>
+
+        <section class="quiz-area-grid">
+            <div class="quiz-panel" id="flashcard-panel">
+                <div class="flashcard-header">
+                    <h2>오늘의 농업용어</h2>
+                    <button id="newFlashcardBtn" class="quiz-button">새 단어</button>
+                </div>
+                <div id="flashcard" class="quiz-card"></div>
+            </div>
+            <div class="quiz-panel" id="interactive-quiz-panel">
+                <h2>농업용어 맞추기 퀴즈</h2>
+                <div class="interactive-question" id="interactive-question"></div>
+                <input type="text" id="answer-input" class="answer-input" placeholder="여기에 크메르어 입력">
+                <button id="check-answer-btn" class="quiz-button" style="width: 100%;">확인</button>
+                <div class="feedback" id="feedback"></div>
+            </div>
+            <div class="quiz-panel" id="example-panel">
+                <h2>오늘의 예문</h2>
+                <div id="example-display-area" class="example-list"></div>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div id="results-count"></div>
+            <div class="table-container">
+                <table class="term-table">
+                    <thead id="table-header">
+                        <tr>
+                            <th>크메르어</th>
+                            <th>한글 독음</th>
+                            <th>한국어 뜻</th>
+                            <th>카테고리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+            <div id="pagination-container" class="pagination-controls"></div>
+        </section>
+    </div>
+
+    <!-- START: DATA EMBEDDING -->
+    <script>
+        const categories = {
+            'all': { name: '전체' },
+            'crop_cultivation': { name: '작물재배' },
+            'livestock': { name: '축산업' },
+            'agricultural_machinery': { name: '농기계' },
+            'soil_management': { name: '토양관리' },
+            'fertilizers': { name: '비료' },
+            'pest_control': { name: '병해충방제' },
+            'post_harvest': { name: '수확후처리' },
+            'storage_technology': { name: '저장기술' },
+            'processing_technology': { name: '가공기술' },
+            'distribution': { name: '유통' },
+            'agricultural_policy': { name: '농업정책' },
+            'farm_management': { name: '농업경영' },
+            'horticulture': { name: '원예' },
+            'forestry': { name: '임업' },
+            'fisheries': { name: '수산업' },
+            'agricultural_technology': { name: '농업기술' },
+            'water_management': { name: '수자원관리' },
+            'agricultural_facilities': { name: '농업시설' },
+            'seed_technology': { name: '종자기술' },
+            'agriculture_portal': { name: '🌐 농업정보 포털' }
+        };
+
+        // 농업용어 데이터 (영어 뜻 포함)
+        const allTerms = [
+            // 작물재배 (Crop Cultivation)
+            {"id": 1, "khmer": "ស្រូវ", "pronunciation_ko": "스라우", "meaning_ko": "벼", "meaning_en": "rice", "category": "crop_cultivation"},
+            {"id": 2, "khmer": "ស្រែ", "pronunciation_ko": "스래", "meaning_ko": "논", "meaning_en": "rice field", "category": "crop_cultivation"},
+            {"id": 3, "khmer": "ដំណាំ", "pronunciation_ko": "덤남", "meaning_ko": "농작물", "meaning_en": "crops", "category": "crop_cultivation"},
+            {"id": 4, "khmer": "ពោត", "pronunciation_ko": "포엣", "meaning_ko": "옥수수", "meaning_en": "corn", "category": "crop_cultivation"},
+            {"id": 5, "khmer": "ដូង", "pronunciation_ko": "도엉", "meaning_ko": "코코넛", "meaning_en": "coconut", "category": "crop_cultivation"},
+            
+            // 축산업 (Livestock)
+            {"id": 6, "khmer": "គោ", "pronunciation_ko": "코", "meaning_ko": "소", "meaning_en": "cattle", "category": "livestock"},
+            {"id": 7, "khmer": "ក្របី", "pronunciation_ko": "크라비", "meaning_ko": "물소", "meaning_en": "water buffalo", "category": "livestock"},
+            {"id": 8, "khmer": "ជ្រូក", "pronunciation_ko": "추룩", "meaning_ko": "돼지", "meaning_en": "pig", "category": "livestock"},
+            {"id": 9, "khmer": "មាន់", "pronunciation_ko": "만", "meaning_ko": "닭", "meaning_en": "chicken", "category": "livestock"},
+            {"id": 10, "khmer": "ត្រី", "pronunciation_ko": "뜨리", "meaning_ko": "물고기", "meaning_en": "fish", "category": "livestock"},
+            
+            // 농기계 (Agricultural Machinery)
+            {"id": 11, "khmer": "គ្រឿងយន្តកសិកម្ម", "pronunciation_ko": "크룽욘까시깜", "meaning_ko": "농기계", "meaning_en": "agricultural machinery", "category": "agricultural_machinery"},
+            {"id": 12, "khmer": "ត្រាក់ទ័រ", "pronunciation_ko": "뜨락터", "meaning_ko": "트랙터", "meaning_en": "tractor", "category": "agricultural_machinery"},
+            {"id": 13, "khmer": "ចង្កូម", "pronunciation_ko": "청쿰", "meaning_ko": "쟁기", "meaning_en": "plow", "category": "agricultural_machinery"},
+            {"id": 14, "khmer": "កាំបិត", "pronunciation_ko": "깜빗", "meaning_ko": "낫", "meaning_en": "sickle", "category": "agricultural_machinery"},
+            {"id": 15, "khmer": "ម៉ាស៊ីនច្រូតកាត់", "pronunciation_ko": "마신 츄룻깟", "meaning_ko": "수확기", "meaning_en": "harvester", "category": "agricultural_machinery"},
+            
+            // 토양관리 (Soil Management)
+            {"id": 16, "khmer": "ដី", "pronunciation_ko": "다이", "meaning_ko": "흙, 토양", "meaning_en": "soil", "category": "soil_management"},
+            {"id": 17, "khmer": "ដីល្អ", "pronunciation_ko": "다이 러", "meaning_ko": "좋은 토양", "meaning_en": "fertile soil", "category": "soil_management"},
+            {"id": 18, "khmer": "ដីខ្សាច់", "pronunciation_ko": "다이 크삭", "meaning_ko": "모래땅", "meaning_en": "sandy soil", "category": "soil_management"},
+            {"id": 19, "khmer": "ដីឥដ្ឋ", "pronunciation_ko": "다이 읻", "meaning_ko": "점토", "meaning_en": "clay soil", "category": "soil_management"},
+            {"id": 20, "khmer": "ដីជាតិ", "pronunciation_ko": "다이 체아티", "meaning_ko": "토질", "meaning_en": "soil quality", "category": "soil_management"},
+            
+            // 비료 (Fertilizers)
+            {"id": 21, "khmer": "ជី", "pronunciation_ko": "치", "meaning_ko": "비료", "meaning_en": "fertilizer", "category": "fertilizers"},
+            {"id": 22, "khmer": "ជីធម្មជាតិ", "pronunciation_ko": "치 톰마체아티", "meaning_ko": "천연비료", "meaning_en": "natural fertilizer", "category": "fertilizers"},
+            {"id": 23, "khmer": "ជីសរីរាង្គ", "pronunciation_ko": "치 사리랑", "meaning_ko": "유기비료", "meaning_en": "organic fertilizer", "category": "fertilizers"},
+            {"id": 24, "khmer": "ជីគីមី", "pronunciation_ko": "치 끼미", "meaning_ko": "화학비료", "meaning_en": "chemical fertilizer", "category": "fertilizers"},
+            {"id": 25, "khmer": "អាចម៍", "pronunciation_ko": "아촘", "meaning_ko": "퇴비", "meaning_en": "compost", "category": "fertilizers"},
+            
+            // 병해충방제 (Pest Control)
+            {"id": 26, "khmer": "សត្វល្អិត", "pronunciation_ko": "삿 러잇", "meaning_ko": "해충", "meaning_en": "pest", "category": "pest_control"},
+            {"id": 27, "khmer": "ថ្នាំសំលាប់សត្វល្អិត", "pronunciation_ko": "트남 썸랍 삿 러잇", "meaning_ko": "살충제", "meaning_en": "pesticide", "category": "pest_control"},
+            {"id": 28, "khmer": "ជំងឺរុក្ខជាតិ", "pronunciation_ko": "춤응이 룩체아티", "meaning_ko": "식물병", "meaning_en": "plant disease", "category": "pest_control"},
+            {"id": 29, "khmer": "ថ្នាំកំចាត់សត្វល្អិត", "pronunciation_ko": "트남 껌찯 삿 러잇", "meaning_ko": "방충제", "meaning_en": "insect repellent", "category": "pest_control"},
+            {"id": 30, "khmer": "ការការពារដំណាំ", "pronunciation_ko": "까 까파 덤남", "meaning_ko": "작물보호", "meaning_en": "crop protection", "category": "pest_control"},
+            
+            // 수확후처리 (Post Harvest)
+            {"id": 31, "khmer": "ការច្រូតកាត់", "pronunciation_ko": "까 츄룻깟", "meaning_ko": "수확", "meaning_en": "harvest", "category": "post_harvest"},
+            {"id": 32, "khmer": "ការស្ងួត", "pronunciation_ko": "까 스응웃", "meaning_ko": "건조", "meaning_en": "drying", "category": "post_harvest"},
+            {"id": 33, "khmer": "ការវេចខ្ចប់", "pronunciation_ko": "까 벡 크쩝", "meaning_ko": "포장", "meaning_en": "packaging", "category": "post_harvest"},
+            {"id": 34, "khmer": "ការរក្សាទុក", "pronunciation_ko": "까 레악사 툭", "meaning_ko": "저장", "meaning_en": "storage", "category": "post_harvest"},
+            {"id": 35, "khmer": "គុណភាពផលិតផល", "pronunciation_ko": "꾼파프 팔릿팔", "meaning_ko": "생산품 품질", "meaning_en": "product quality", "category": "post_harvest"},
+            
+            // 저장기술 (Storage Technology)
+            {"id": 36, "khmer": "ស្តុក", "pronunciation_ko": "스뚝", "meaning_ko": "창고", "meaning_en": "warehouse", "category": "storage_technology"},
+            {"id": 37, "khmer": "ទូទឹកកក", "pronunciation_ko": "투뜩께악", "meaning_ko": "냉장고", "meaning_en": "refrigerator", "category": "storage_technology"},
+            {"id": 38, "khmer": "បង្អួច", "pronunciation_ko": "방응웃", "meaning_ko": "창문", "meaning_en": "window", "category": "storage_technology"},
+            {"id": 39, "khmer": "ការធានាគុណភាព", "pronunciation_ko": "까 티아나 꾼파프", "meaning_ko": "품질보증", "meaning_en": "quality assurance", "category": "storage_technology"},
+            {"id": 40, "khmer": "សីតុណ្ហភាព", "pronunciation_ko": "시똔하파프", "meaning_ko": "온도", "meaning_en": "temperature", "category": "storage_technology"},
+            
+            // 가공기술 (Processing Technology)
+            {"id": 41, "khmer": "ការកែច្នៃ", "pronunciation_ko": "까 께찬", "meaning_ko": "가공", "meaning_en": "processing", "category": "processing_technology"},
+            {"id": 42, "khmer": "រោងចក្រ", "pronunciation_ko": "로엉 쩍", "meaning_ko": "공장", "meaning_en": "factory", "category": "processing_technology"},
+            {"id": 43, "khmer": "ម៉ាស៊ីនកិន", "pronunciation_ko": "마신 낀", "meaning_ko": "분쇄기", "meaning_en": "grinding machine", "category": "processing_technology"},
+            {"id": 44, "khmer": "ការវេចខ្ចប់អាហារ", "pronunciation_ko": "까 벡 크쩝 아하", "meaning_ko": "식품포장", "meaning_en": "food packaging", "category": "processing_technology"},
+            {"id": 45, "khmer": "បច្ចេកវិទ្យាអាហារ", "pronunciation_ko": "빠쩨까위토 아하", "meaning_ko": "식품기술", "meaning_en": "food technology", "category": "processing_technology"},
+            
+            // 유통 (Distribution)
+            {"id": 46, "khmer": "ទីផ្សារ", "pronunciation_ko": "티프사", "meaning_ko": "시장", "meaning_en": "market", "category": "distribution"},
+            {"id": 47, "khmer": "ការដឹកជញ្ជូន", "pronunciation_ko": "까 득 춘준", "meaning_ko": "운송", "meaning_en": "transportation", "category": "distribution"},
+            {"id": 48, "khmer": "តម្លៃ", "pronunciation_ko": "뜸러", "meaning_ko": "가격", "meaning_en": "price", "category": "distribution"},
+            {"id": 49, "khmer": "អ្នកលក់", "pronunciation_ko": "네악 럭", "meaning_ko": "판매자", "meaning_en": "seller", "category": "distribution"},
+            {"id": 50, "khmer": "អ្នកទិញ", "pronunciation_ko": "네악 틴", "meaning_ko": "구매자", "meaning_en": "buyer", "category": "distribution"},
+            
+            // 농업정보 포털 (Agriculture Information Portal) - 대폭 확장
+            
+            // 정부 기관 (Government Agencies)
+            {"id": 51, "khmer": "ក្រសួងកសិកម្ម", "pronunciation_ko": "크라수앙 까시깜", "meaning_ko": "농림수산부 (MAFF)", "meaning_en": "Ministry of Agriculture, Forestry and Fisheries", "category": "agriculture_portal", "website": "https://www.maff.gov.kh/", "description": "캄보디아 농림수산부 공식 웹사이트"},
+            {"id": 52, "khmer": "វិទ្យាស្ថានស្រាវជ្រាវកសិកម្ម", "pronunciation_ko": "위토사탄 스라보체라보 까시깜", "meaning_ko": "캄보디아 농업연구개발원 (CARDI)", "meaning_en": "Cambodian Agricultural Research and Development Institute", "category": "agriculture_portal", "website": "https://www.cardi.org.kh/", "description": "캄보디아 농업연구개발원"},
+            {"id": 53, "khmer": "វិទ្យាល័យកសិកម្មជាតិ", "pronunciation_ko": "위토라이 까시깜 체아티", "meaning_ko": "왕립농업대학 (RUA)", "meaning_en": "Royal University of Agriculture", "category": "agriculture_portal", "website": "http://www.rua.edu.kh/", "description": "캄보디아 최고의 농업 교육기관"},
+            {"id": 54, "khmer": "ធនាគារអភិវឌ្ឍន៍កសិកម្ម", "pronunciation_ko": "티아나카 아피보탄 까시깜", "meaning_ko": "농촌개발은행 (ARDB)", "meaning_en": "Agricultural and Rural Development Bank", "category": "agriculture_portal", "website": "https://www.ardb.com.kh/", "description": "캄보디아 농업 및 농촌개발 전문 은행"},
+            {"id": 55, "khmer": "វិទ្យាស្ថានអភិវឌ្ឍន៍", "pronunciation_ko": "위토사탄 아피보탄", "meaning_ko": "캄보디아 개발자원연구소 (CDRI)", "meaning_en": "Cambodia Development Resource Institute", "category": "agriculture_portal", "website": "https://www.cdri.org.kh/", "description": "캄보디아 정책연구 및 개발 전문 싱크탱크"},
+
+            // 국제 기구 (International Organizations)
+            {"id": 56, "khmer": "អង្គការអាហារនិងកសិកម្ម", "pronunciation_ko": "응까까 아하 니응 까시깜", "meaning_ko": "FAO 캄보디아", "meaning_en": "Food and Agriculture Organization", "category": "agriculture_portal", "website": "https://www.fao.org/cambodia/en", "description": "유엔 식량농업기구 캄보디아 사무소"},
+            {"id": 57, "khmer": "អង្គការអភិវឌ្ឍន៍អន្តរជាតិ", "pronunciation_ko": "응까까 아피보탄 안따라체아티", "meaning_ko": "UNDP 캄보디아", "meaning_en": "United Nations Development Programme", "category": "agriculture_portal", "website": "https://www.undp.org/cambodia", "description": "유엔개발계획 캄보디아 사무소"},
+            {"id": 58, "khmer": "កម្មវិធីអភិវឌ្ឍន៍អាមេរិក", "pronunciation_ko": "깜마위티 아피보탄 아메리크", "meaning_ko": "USAID 캄보디아", "meaning_en": "United States Agency for International Development", "category": "agriculture_portal", "website": "https://www.usaid.gov/cambodia", "description": "미국 국제개발처 캄보디아 농업 프로그램"},
+            {"id": 59, "khmer": "មូលនិធិអភិវឌ្ឍន៍កសិកម្ម", "pronunciation_ko": "물니티 아피보탄 까시깜", "meaning_ko": "국제농업개발기금 (IFAD)", "meaning_en": "International Fund for Agricultural Development", "category": "agriculture_portal", "website": "https://www.ifad.org/en/web/operations/w/country/cambodia", "description": "국제농업개발기금 캄보디아"},
+            {"id": 60, "khmer": "ធនាគារអភិវឌ្ឍន៍អាស៊ី", "pronunciation_ko": "티아나카 아피보탄 아시", "meaning_ko": "아시아개발은행 (ADB)", "meaning_en": "Asian Development Bank", "category": "agriculture_portal", "website": "https://www.adb.org/countries/cambodia/main", "description": "ADB 캄보디아 농업 프로젝트"},
+            {"id": 61, "khmer": "មជ្ឈមណ្ឌលស្រាវជ្រាវអង្ករអន្តរជាតិ", "pronunciation_ko": "맛치마달 스라보체라보 응까 안따라체아티", "meaning_ko": "국제쌀연구소 (IRRI)", "meaning_en": "International Rice Research Institute", "category": "agriculture_portal", "website": "https://www.irri.org/where-we-work/countries/cambodia", "description": "국제쌀연구소 캄보디아"},
+            {"id": 62, "khmer": "អង្គការសហប្រជាជាតិ", "pronunciation_ko": "응까까 사하프러체아체아티", "meaning_ko": "세계식량계획 (WFP)", "meaning_en": "World Food Programme", "category": "agriculture_portal", "website": "https://www.wfp.org/countries/cambodia", "description": "유엔 세계식량계획 캄보디아"},
+            {"id": 63, "khmer": "អង្គការជំនួយជប៉ុន", "pronunciation_ko": "응까까 춤누이 치어폰", "meaning_ko": "국제협력기구 (JICA)", "meaning_en": "Japan International Cooperation Agency", "category": "agriculture_portal", "website": "https://www.jica.go.jp/cambodia/english/", "description": "일본 국제협력기구 캄보디아"},
+
+            // 민간 단체 및 협회 (Private Organizations & Associations)
+            {"id": 64, "khmer": "សម្ព័ន្ធអង្ករកម្ពុជា", "pronunciation_ko": "쌈폰 응까 껌푸치어", "meaning_ko": "캄보디아 쌀 연맹 (CRF)", "meaning_en": "Cambodia Rice Federation", "category": "agriculture_portal", "website": "http://www.crf.org.kh/", "description": "캄보디아 쌀 산업 민간부문 연맹"},
+            {"id": 65, "khmer": "សហព័ន្ធកសិករកម្ពុជា", "pronunciation_ko": "사하폰 까시까 껌푸치어", "meaning_ko": "캄보디아 농민 연맹 (CFAP)", "meaning_en": "Cambodian Farmer Federation Association", "category": "agriculture_portal", "website": "https://cfap-cambodia.org/", "description": "캄보디아 농업 생산자 농민 연맹 협회"},
+            {"id": 66, "khmer": "បណ្ដាញអភិវឌ្ឍន៍ជនបទ", "pronunciation_ko": "반다냥 아피보탄 촌로반", "meaning_ko": "농촌개발 네트워크 (CamDHRRA)", "meaning_en": "Cambodian Human Resource & Rural Development Association", "category": "agriculture_portal", "website": "https://cambodhrra.org/", "description": "캄보디아 농촌개발 연구 협회"},
+            {"id": 67, "khmer": "ក្រុមហ៊ុនអំរុចអង្ករ", "pronunciation_ko": "크룸훈 암룻 응까", "meaning_ko": "암루 라이스 (Amru Rice)", "meaning_en": "Amru Rice Cambodia", "category": "agriculture_portal", "website": "https://amrurice.com.kh/", "description": "캄보디아 최대 유기농 쌀 생산 및 수출업체"},
+            {"id": 68, "khmer": "ធនាគារអាក្លេដា", "pronunciation_ko": "티아나카 아클레다", "meaning_ko": "아클레다 은행 (ACLEDA)", "meaning_en": "ACLEDA Bank", "category": "agriculture_portal", "website": "https://www.acledabank.com.kh/", "description": "캄보디아 농업 금융 선도 은행"},
+            {"id": 69, "khmer": "ធនាគារវីង", "pronunciation_ko": "티아나카 윙", "meaning_ko": "윙 은행 (Wing Bank)", "meaning_en": "Wing Bank", "category": "agriculture_portal", "website": "https://www.wingbank.com.kh/", "description": "캄보디아 디지털 농업 금융 서비스"},
+
+            // 연구 및 교육 기관 (Research & Education)
+            {"id": 70, "khmer": "មហាវិទ្យាល័យមហាឫស្សី", "pronunciation_ko": "마하위토라이 마하르시", "meaning_ko": "마하루세이 베딕 대학 (MVU)", "meaning_en": "Maharishi Vedic University", "category": "agriculture_portal", "website": "https://www.mvu.edu.kh/", "description": "캄보디아 농업 교육 및 연구"},
+            {"id": 71, "khmer": "មជ្ឈមណ្ឌលព្រែកលាប", "pronunciation_ko": "맛치마달 프렉랍", "meaning_ko": "프렉 리프 국립농업대학", "meaning_en": "Prek Leap National College of Agriculture", "category": "agriculture_portal", "website": "https://www.plnca.edu.kh/", "description": "국립농업전문대학"},
+            {"id": 72, "khmer": "មជ្ឈមណ្ឌលស្រាវជ្រាវអន្តរជាតិ", "pronunciation_ko": "맛치마달 스라보체라보 안따라체아티", "meaning_ko": "국제농업연구센터 (CGIAR)", "meaning_en": "CGIAR Research Centers", "category": "agriculture_portal", "website": "https://www.cgiar.org/where-we-work/cambodia/", "description": "국제농업연구협의그룹"},
+
+            // 정보 포털 및 데이터베이스 (Information Portals & Databases)
+            {"id": 73, "khmer": "ប្រព័ន្ធព័ត៌មានកសិកម្ម", "pronunciation_ko": "프로폰 포타만 까시깜", "meaning_ko": "농업정보시스템 (ODC)", "meaning_en": "Open Development Cambodia", "category": "agriculture_portal", "website": "https://opendevelopmentcambodia.net/", "description": "캄보디아 오픈 개발 데이터 포털"},
+            {"id": 74, "khmer": "ទិន្នន័យស្ថិតិកសិកម្ម", "pronunciation_ko": "틴난니 스티티 까시깜", "meaning_ko": "농업통계청 (NIS)", "meaning_en": "National Institute of Statistics", "category": "agriculture_portal", "website": "https://www.nis.gov.kh/", "description": "캄보디아 국가통계원 농업 데이터"},
+            {"id": 75, "khmer": "មជ្ឈមណ្ឌលព័ត៌មានកសិកម្ម", "pronunciation_ko": "맛치마달 포타만 까시깜", "meaning_ko": "농업정보센터 (G-FRAS)", "meaning_en": "Global Forum for Rural Advisory Services", "category": "agriculture_portal", "website": "https://www.g-fras.org/en/world-wide-extension-study/asia/south-eastern-asia/287-cambodia.html", "description": "글로벌 농촌자문서비스 포럼"},
+
+            // NGO 및 개발 단체 (NGOs & Development Organizations)  
+            {"id": 76, "khmer": "អង្គការហេតុ", "pronunciation_ko": "응까까 하엗", "meaning_ko": "하이퍼 인터내셔널 (Heifer)", "meaning_en": "Heifer International", "category": "agriculture_portal", "website": "https://www.heifer.org/our-work/where-we-work/cambodia", "description": "국제 축산 개발 NGO"},
+            {"id": 77, "khmer": "អង្គការកាសេន", "pronunciation_ko": "응까까 까센", "meaning_ko": "케어 인터내셔널 (CARE)", "meaning_en": "CARE International", "category": "agriculture_portal", "website": "https://www.care.org.kh/", "description": "국제 농촌개발 지원 NGO"},
+            {"id": 78, "khmer": "អង្គការវើលវីជន", "pronunciation_ko": "응까까 웰위촌", "meaning_ko": "월드비전 캄보디아", "meaning_en": "World Vision Cambodia", "category": "agriculture_portal", "website": "https://www.worldvision.org.kh/", "description": "국제 농촌개발 및 아동보호 NGO"},
+
+            // 농업 기업 및 스타트업 (Agribusiness & Startups)
+            {"id": 79, "khmer": "ក្រុមហ៊ុនកាហ្គីល", "pronunciation_ko": "크룸훈 까길", "meaning_ko": "카길 캄보디아 (Cargill)", "meaning_en": "Cargill Cambodia", "category": "agriculture_portal", "website": "https://www.cargill.com/worldwide/cambodia", "description": "글로벌 농업 및 식품 기업"},
+            {"id": 80, "khmer": "ក្រុមហ៊ុនបាញ់ជី", "pronunciation_ko": "크룸훈 반치", "meaning_ko": "반지 핀테크 (BanhJi)", "meaning_en": "BanhJi FinTech", "category": "agriculture_portal", "website": "https://banhji.com/", "description": "농업 핀테크 솔루션 제공업체"}
+        ];
+    </script>
+    <script>
+        // 예문 데이터
+        const examples = {
+            1: [ { "example_kh": "ស្រូវជាដំណាំសំខាន់បំផុតរបស់កម្ពុជា។", "example_pron": "스라우 치어 덤남 썸칸 밤펏 로버스 껌푸치어", "example_ko": "벼는 캄보디아의 가장 중요한 농작물입니다.", "example_en": "Rice is the most important crop in Cambodia." } ],
+            2: [ { "example_kh": "ស្រែនេះទូលាយណាស់។", "example_pron": "스래 니스 투리어이 나스", "example_ko": "이 논은 매우 넓습니다.", "example_en": "This rice field is very wide." } ],
+            3: [ { "example_kh": "ដំណាំទាំងនេះលូតលាស់បានល្អ។", "example_pron": "덤남 땡 니스 룻리어스 반 러", "example_ko": "이 농작물들이 잘 자랐습니다.", "example_en": "These crops have grown well." } ],
+            4: [ { "example_kh": "មើលឃើញសត្វចិញ្ចឹមច្រើននៅក្នុងស្រុក។", "example_pron": "멀크뇬 삿 치뇬침 쯔라언 노우 크농 스록", "example_ko": "마을에서 많은 가축을 볼 수 있습니다.", "example_en": "You can see many livestock in the village." } ],
+            5: [ { "example_kh": "កសិករកំពុងបង្កាត់ពូជស្រូវថ្មី។", "example_pron": "까시커 껌풍 벙깟 푸치 스라우 트마이", "example_ko": "농부가 새로운 벼 품종을 개발하고 있습니다.", "example_en": "Farmers are developing new rice varieties." } ],
+            6: [ { "example_kh": "គោជាសត្វពាហនៈសំខាន់សម្រាប់កសិករ។", "example_pron": "코 치어 삿 피어하나 썸칸 쌈랍 까시커", "example_ko": "소는 농부에게 중요한 가축입니다.", "example_en": "Cattle are important livestock for farmers." } ],
+            7: [ { "example_kh": "ចិញ្ចឹមជ្រូកជាមុខរបរដែលរកចំណូលបាន។", "example_pron": "치뇬침 추룩 치어 묵 로버 덜 럭 춤눌 반", "example_ko": "돼지 사육은 수익을 낼 수 있는 직업입니다.", "example_en": "Pig farming is a profitable occupation." } ],
+            8: [ { "example_kh": "មាន់កំពុងប្រមូលកូនក្នុងទីធ្លា។", "example_pron": "만 껌풍 쁘러물 군 크농 티틀라", "example_ko": "암탉이 마당에서 새끼를 모으고 있습니다.", "example_en": "The hen is gathering chicks in the yard." } ],
+            9: [ { "example_kh": "ត្រីស្រស់ច្រើននៅក្នុងស្ទឹង។", "example_pron": "뜨리 스로스 쯔라언 노우 크농 스뜽", "example_ko": "연못에 신선한 물고기가 많습니다.", "example_en": "There are many fresh fish in the pond." } ],
+            10: [ { "example_kh": "ពពែកំពុងហែលនៅក្នុងស្រះ។", "example_pron": "뽀펙 껌풍 헬 노우 크농 스라", "example_ko": "오리가 연못에서 헤엄치고 있습니다.", "example_en": "Ducks are swimming in the pond." } ],
+            11: [ { "example_kh": "គ្រឿងយន្តកសិកម្មទំនើបជួយឱ្យការងារកសិកម្មកាន់តែងាយស្រួល។", "example_pron": "크룽욘 까시깜 뜸노업 추이 오이 까낭가 까시깜 간 떼 응이어이 스루얼", "example_ko": "현대적인 농기계는 농업을 더욱 쉽게 만들어 줍니다.", "example_en": "Modern agricultural machinery makes farming easier." } ],
+            12: [ { "example_kh": "រថយន្តដឹកទំនិញកសិកម្មបានមកដល់ទីផ្សារ។", "example_pron": "럿야운 득 뜸니뇨 까시깜 반 막 덜 티프사", "example_ko": "농산물 운송 트럭이 시장에 도착했습니다.", "example_en": "The agricultural transport truck has arrived at the market." } ],
+            13: [ { "example_kh": "នាវាត្រីសម្រាប់ស្រុកជនបទ។", "example_pron": "니어바 뜨리 쌈랍 스록 촌 버트", "example_ko": "농촌 지역을 위한 어선입니다.", "example_en": "It's a fishing boat for rural areas." } ],
+            14: [ { "example_kh": "ថ្នាំកំចាត់សត្វល្អិតប្រើប្រាស់បានល្អ។", "example_pron": "트남 껌찻 삿 러잇 쁘러 쁘라스 반 러", "example_ko": "살충제를 잘 사용할 수 있습니다.", "example_en": "Pesticides can be used effectively." } ],
+            15: [ { "example_kh": "កាត់ស្មៅនៅលើស្រែដោយប្រើឧបករណ៍។", "example_pron": "깟 스마우 노우 르 스래 도이 쁘러 우버껀", "example_ko": "도구를 사용해서 논의 풀을 깎습니다.", "example_en": "Cut grass on the rice field using tools." } ],
+            16: [ { "example_kh": "ដីល្អគឺជាមូលដ្ឋានសំខាន់នៃកសិកម្មជោគជ័យ។", "example_pron": "다이 러 끄 치어 물단 썸칸 니 까시깜 초끄 체이", "example_ko": "좋은 토양은 성공적인 농업의 중요한 기초입니다.", "example_en": "Good soil is an important foundation for successful farming." } ],
+            17: [ { "example_kh": "ទឹកនៅក្នុងស្ទឹងស្អាតសម្រាប់ស្រោចស្រែ។", "example_pron": "뜨크 노우 크농 스뜽 스아트 쌈랍 스로치 스래", "example_ko": "연못의 물이 논 관개에 좋습니다.", "example_en": "The water in the pond is clean for rice field irrigation." } ],
+            18: [ { "example_kh": "អាកាសធាតុល្អជួយឱ្យដំណាំលូតលាស់។", "example_pron": "아까사타뜨 러 추이 오이 덤남 룻리어스", "example_ko": "좋은 날씨가 농작물 성장에 도움이 됩니다.", "example_en": "Good weather helps crops grow." } ],
+            19: [ { "example_kh": "ភ្លៀងធ្លាក់ច្រើនក្នុងរដូវវស្សា។", "example_pron": "플리어엉 틀락 쯔라언 크농 러두 보싸", "example_ko": "우기에 비가 많이 내립니다.", "example_en": "It rains a lot during the rainy season." } ],
+            20: [ { "example_kh": "រដូវប្រាំងអាចប៉ះពាល់ដល់ដំណាំ។", "example_pron": "러두 쁘랑 아치 빠 팔 덜 덤남", "example_ko": "건기가 농작물에 영향을 줄 수 있습니다.", "example_en": "Dry season can affect crops." } ],
+            21: [ { "example_kh": "ជីធម្មជាតិល្អជាងជីគីមី។", "example_pron": "치 톰마체아티 러 치어엉 치 끼미", "example_ko": "천연비료가 화학비료보다 좋습니다.", "example_en": "Natural fertilizer is better than chemical fertilizer." } ],
+            22: [ { "example_kh": "ថ្នាំកំចាត់ស្មៅកបណ្តាលឱ្យប៉ះពាល់បរិស្ថាន។", "example_pron": "트남 껌찻 스마우 껍얀달 오이 빠 팔 바리스탄", "example_ko": "제초제가 환경에 영향을 미칩니다.", "example_en": "Herbicides affect the environment." } ],
+            23: [ { "example_kh": "ភ្នាស់ល្អសម្រាប់ដំណាំបន្លែ។", "example_pron": "프나스 러 쌈랍 덤남 번러", "example_ko": "좋은 거름이 채소 재배에 도움이 됩니다.", "example_en": "Good manure helps vegetable cultivation." } ],
+            24: [ { "example_kh": "ស្ពាយទឹកសម្រាប់ស្រោចស្រែ។", "example_pron": "스피어이 뜨크 쌈랍 스로치 스래", "example_ko": "논 관개를 위해 물을 나릅니다.", "example_en": "Carry water for rice field irrigation." } ],
+            25: [ { "example_kh": "ប្រូតេអ៊ីននៅក្នុងគ្រាប់ពូជល្អ។", "example_pron": "쁘로떼인 노우 크농 크랍 푸치 러", "example_ko": "종자의 단백질이 좋습니다.", "example_en": "The protein in seeds is good." } ],
+            26: [ { "example_kh": "សត្វល្អិតធ្វើឱ្យដំណាំខូចខាត។", "example_pron": "삿 러잇 트베 오이 덤남 쿠치 카트", "example_ko": "해충이 농작물을 손상시킵니다.", "example_en": "Pests damage the crops." } ],
+            27: [ { "example_kh": "ជំងឺដំណាំរាតត្បាតនៅរដូវវស្សា។", "example_pron": "춤으 덤남 랏뜨바트 노우 러두 보싸", "example_ko": "우기에 식물병이 퍼집니다.", "example_en": "Plant diseases spread during the rainy season." } ],
+            28: [ { "example_kh": "ស្មៅឈ្នាសបង្កាច់ការលូតលាស់ដំណាំ។", "example_pron": "스마우 츠나스 벙깟 까 룻리어스 덤남", "example_ko": "잡초가 농작물 성장을 방해합니다.", "example_en": "Weeds interfere with crop growth." } ],
+            29: [ { "example_kh": "ផ្សិតបង្កជំងឺដល់ដំណាំស្រូវ។", "example_pron": "프시트 벙끄 춤으 덜 덤남 스라우", "example_ko": "곰팡이가 벼에 병을 일으킵니다.", "example_en": "Fungus causes disease in rice plants." } ],
+            30: [ { "example_kh": "វីរុសអាចឆ្លងពីដំណាំមួយទៅដំណាំផ្សេង។", "example_pron": "위루스 아치 츨렝 피 덤남 무이 터우 덤남 프센", "example_ko": "바이러스가 한 식물에서 다른 식물로 전파될 수 있습니다.", "example_en": "Viruses can spread from one plant to another." } ],
+            31: [ { "example_kh": "ពេលវេលាច្រូតកាត់ស្រូវបានដល់ហើយ។", "example_pron": "펠 벨라 츄룻깟 스라우 반 덜 하이", "example_ko": "벼를 수확할 시간이 되었습니다.", "example_en": "It's time to harvest the rice." } ],
+            32: [ { "example_kh": "រៀបចំកាត់ស្រូវដោយគ្រឿងយន្តទំនើប។", "example_pron": "리업찜 깟 스라우 도이 크룽욘 뜸노업", "example_ko": "현대 기계로 벼 수확을 준비합니다.", "example_en": "Prepare rice harvesting with modern machinery." } ],
+            33: [ { "example_kh": "ព្រុំស្រូវត្រូវសំរួល។", "example_pron": "쁘룸 스라우 뜨로우 쌈루얼", "example_ko": "벼를 건조시켜야 합니다.", "example_en": "Rice needs to be dried." } ],
+            34: [ { "example_kh": "រក្សាទុកគ្រាប់ពូជនៅកន្លែងស្ងួត។", "example_pron": "럭사 툭 크랍 푸치 노우 껀렝 스으트", "example_ko": "종자를 마른 곳에 보관합니다.", "example_en": "Store seeds in a dry place." } ],
+            35: [ { "example_kh": "លក់ផលិតផលកសិកម្មនៅទីផ្សារមូលដ្ឋាន។", "example_pron": "럭 팔릿팔 까시깜 노우 티프사 물단", "example_ko": "지역 시장에서 농산물을 판매합니다.", "example_en": "Sell agricultural products at local markets." } ],
+            36: [ { "example_kh": "ការធានារ៉ាប់រងកសិកម្មជាការពារពីហានិភ័យ។", "example_pron": "까 타나 랍롱 까시깜 치어 까피어 피 하니페이", "example_ko": "농업보험은 위험으로부터 보호합니다.", "example_en": "Agricultural insurance protects from risks." } ],
+            37: [ { "example_kh": "អ្នកចិញ្ចឹមត្រូវមានបទពិសោធន៍។", "example_pron": "녹 치뇬침 뜨로우 미언 벗 피쇼트", "example_ko": "사육사는 경험이 있어야 합니다.", "example_en": "Breeders need to have experience." } ],
+            38: [ { "example_kh": "អ្នកដាំដុះមានចំណេះដឹងខ្ពស់។", "example_pron": "녹 담도스 미언 춤너스 득 크포스", "example_ko": "재배자는 높은 지식을 가지고 있습니다.", "example_en": "Cultivators have high knowledge." } ],
+            39: [ { "example_kh": "វេជ្ជបណ្ឌិតសត្វពិនិត្យសុខភាពសត្វចិញ្ចឹម។", "example_pron": "베치반딧 삿 피니치 솝카펩 삿 치뇬침", "example_ko": "수의사가 가축의 건강을 검진합니다.", "example_en": "Veterinarians check livestock health." } ],
+            40: [ { "example_kh": "ឯកទេសកសិកម្មផ្តល់ការណែនាំ។", "example_pron": "엑떼스 까시깜 프털 까넴남", "example_ko": "농업 전문가가 조언을 제공합니다.", "example_en": "Agricultural specialists provide advice." } ],
+            41: [ { "example_kh": "ទិញគ្រឿងសម្ភារៈកសិកម្ម។", "example_pron": "티뇨 크룽 쌈피어레 까시깜", "example_ko": "농업용품을 구입합니다.", "example_en": "Purchase agricultural supplies." } ],
+            42: [ { "example_kh": "លក់បន្លែទាំងអស់នៅទីផ្សារព្រឹក។", "example_pron": "럭 번러 땡 아스 노우 티프사 프릭", "example_ko": "모든 채소를 아침 시장에서 판매합니다.", "example_en": "Sell all vegetables at the morning market." } ],
+            43: [ { "example_kh": "ការដឹកជញ្ជូនផលិតផលត្រូវមានរថយន្តត្រជាក់។", "example_pron": "까 득 촌추 팔릿팔 뜨로우 미언 럿야운 뜨러착", "example_ko": "농산물 운송에는 냉장차가 필요합니다.", "example_en": "Transporting products requires refrigerated trucks." } ],
+            44: [ { "example_kh": "ឃ្លាំងស្តុកកសិកម្មត្រូវមានកំហាប់ស្ងួត។", "example_pron": "클랑 스톡 까시깜 뜨로우 미언 껌합 스으트", "example_ko": "농산물 창고는 건조해야 합니다.", "example_en": "Agricultural warehouses must be dry." } ],
+            45: [ { "example_kh": "ការយកពណ៌សម្រាប់ការកែច្នៃ។", "example_pron": "까 욕 번 쌈랍 까 께츠니", "example_ko": "가공을 위한 색깔 선별입니다.", "example_en": "Color sorting for processing." } ],
+            46: [ { "example_kh": "ទីផ្សារនេះមានផលិតផលកសិកម្មច្រើនប្រភេទ។", "example_pron": "티프사 니스 미언 팔릿팔 까시깜 쯔라언 쁘러펫", "example_ko": "이 시장에는 다양한 농산물이 있습니다.", "example_en": "This market has various agricultural products." } ],
+            47: [ { "example_kh": "ឈ្មួញដាក់លក់នៅតូបផ្សារភ្នំពេញ។", "example_pron": "츠무이뇨 닥 럭 노우 톱 프사 프놈펜", "example_ko": "상인이 프놈펜 시장 가게에서 판매합니다.", "example_en": "Merchants sell at Phnom Penh market stalls." } ],
+            48: [ { "example_kh": "គម្រោងអភិវឌ្ឍន៍កសិកម្មនាំមកនូវការផ្លាស់ប្តូរវិជ្ជមាន។", "example_pron": "꼼로엉 아피보단 까시깜 남막 누 까 플라스뜨 위챠미언", "example_ko": "농업개발 프로젝트가 긍정적인 변화를 가져옵니다.", "example_en": "Agricultural development projects bring positive changes." } ],
+            49: [ { "example_kh": "ការវិនិយោគកសិកម្មនាំមកនូវប្រាក់ចំណូល។", "example_pron": "까 위니요끄 까시깜 남막 누 쁘락 춤눌", "example_ko": "농업 투자가 수익을 가져다 줍니다.", "example_en": "Agricultural investment brings income." } ],
+            50: [ { "example_kh": "អ្នកទិញជ្រើសរើសផលិតផលល្អបំផុត។", "example_pron": "녹 티뇨 추스로스 팔릿팔 러 밤펏", "example_ko": "구매자가 최고의 제품을 선택합니다.", "example_en": "Buyers select the best products." } ]
+        };
+    </script>
+    <!-- END: DATA EMBEDDING -->
+
+    <script>
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(
+                    'const CACHE_NAME="cambodian-agri-v3";self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(["'+location.href+'"])).then(()=>self.skipWaiting()))});self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(c=>Promise.all(c.map(cName=>{if("cambodian-agri-v3"!==cName)return caches.delete(cName)}))).then(()=>self.clients.claim()))});self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});'
+                )).then(reg => console.log('SW registered')).catch(err => console.log('SW registration failed:', err));
+            });
+        }
+        
+        const elements = {
+            categoryContainer: document.getElementById('category-container'),
+            allButtonContainer: document.getElementById('all-button-container'),
+            searchInput: document.getElementById('searchInput'),
+            resultsCount: document.getElementById('results-count'),
+            resultsBody: document.getElementById('results-body'),
+            tableHeader: document.getElementById('table-header'),
+            paginationContainer: document.getElementById('pagination-container'),
+            flashcard: document.getElementById('flashcard'),
+            newFlashcardBtn: document.getElementById('newFlashcardBtn'),
+            interactiveQuestion: document.getElementById('interactive-question'),
+            answerInput: document.getElementById('answer-input'),
+            checkAnswerBtn: document.getElementById('check-answer-btn'),
+            feedback: document.getElementById('feedback'),
+            exampleDisplayArea: document.getElementById('example-display-area'),
+            progressFill: document.getElementById('progressFill'),
+            progressStats: document.getElementById('progressStats'),
+            totalTerms: document.getElementById('totalTerms'),
+            totalCategories: document.getElementById('totalCategories'),
+            todayLearned: document.getElementById('todayLearned'),
+            streakDays: document.getElementById('streakDays')
+        };
+
+        let state = {
+            currentCategory: 'all',
+            currentFilteredTerms: [...allTerms],
+            currentInteractiveQuizTerm: null,
+            selectedTerm: null,
+            currentPage: 1, 
+            itemsPerPage: 15,
+            todayLearnedCount: 0,
+            streakDays: 0
+        };
+        
+        const speak = (text) => {
+            if (!('speechSynthesis' in window)) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'km-KH';
+            utterance.rate = 0.8;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const loadLocalStats = () => {
+            const saved = localStorage.getItem('agricultureLearningStats');
+            if (saved) {
+                const stats = JSON.parse(saved);
+                state.todayLearnedCount = stats.todayLearnedCount || 0;
+                state.streakDays = stats.streakDays || 0;
+                
+                // 날짜 확인 (새로운 날이면 초기화)
+                const today = new Date().toDateString();
+                const lastDate = stats.lastDate;
+                if (lastDate !== today) {
+                    state.todayLearnedCount = 0;
+                }
+            }
+            updateStatsDisplay();
+        };
+
+        const saveLocalStats = () => {
+            const stats = {
+                todayLearnedCount: state.todayLearnedCount,
+                streakDays: state.streakDays,
+                lastDate: new Date().toDateString()
+            };
+            localStorage.setItem('agricultureLearningStats', JSON.stringify(stats));
+        };
+
+        const updateStatsDisplay = () => {
+            elements.totalTerms.textContent = allTerms.length.toLocaleString();
+            elements.totalCategories.textContent = Object.keys(categories).length - 1; // 'all' 제외
+            elements.todayLearned.textContent = state.todayLearnedCount;
+            elements.streakDays.textContent = state.streakDays;
+            
+            // 진행률 업데이트 (실제 데이터 기준)
+            const progressPercentage = ((allTerms.length / 1400) * 100).toFixed(1);
+            elements.progressFill.style.width = `${Math.min(progressPercentage, 100)}%`;
+            elements.progressStats.textContent = `${allTerms.length} / 1,400+ 단어 (${progressPercentage}%)`;
+        };
+
+        const renderCategoryButtons = () => {
+            elements.categoryContainer.innerHTML = '';
+            elements.allButtonContainer.innerHTML = '';
+
+            for (const key in categories) {
+                const count = (key === 'all') ? allTerms.length : allTerms.filter(v => v.category === key).length;
+                
+                const btn = document.createElement('button');
+                btn.className = `category-btn ${key === state.currentCategory ? 'active' : ''}`;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'name';
+                nameSpan.textContent = categories[key].name;
+
+                const countSpan = document.createElement('span');
+                countSpan.className = 'count';
+                countSpan.textContent = count;
+                
+                btn.appendChild(nameSpan);
+                btn.appendChild(countSpan);
+
+                btn.onclick = () => handleCategoryClick(key);
+                
+                if (key === 'all') {
+                    btn.id = 'all-category-btn';
+                    elements.allButtonContainer.appendChild(btn);
+                } else {
+                    elements.categoryContainer.appendChild(btn);
+                }
+            }
+        };
+
+        const updateTableHeader = () => {
+            // 농업정보 포털 카테고리인 경우 테이블 헤더 변경
+            if (state.currentCategory === 'agriculture_portal') {
+                elements.tableHeader.innerHTML = `
+                    <tr>
+                        <th>크메르어</th>
+                        <th>한글 독음</th>
+                        <th>기관/단체명</th>
+                        <th>English Name</th>
+                        <th>웹사이트</th>
+                    </tr>
+                `;
+            } else {
+                elements.tableHeader.innerHTML = `
+                    <tr>
+                        <th>크메르어</th>
+                        <th>한글 독음</th>
+                        <th>한국어 뜻</th>
+                        <th>English Meaning</th>
+                        <th>카테고리</th>
+                    </tr>
+                `;
+            }
+        };
+
+        const renderTermsTable = (terms) => {
+            elements.resultsBody.innerHTML = '';
+            updateTableHeader();
+            
+            const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+            const endIndex = startIndex + state.itemsPerPage;
+            const paginatedTerms = terms.slice(startIndex, endIndex);
+
+            paginatedTerms.forEach(term => {
+                const row = document.createElement('tr');
+                row.className = state.selectedTerm && state.selectedTerm.id === term.id ? 'selected' : '';
+                
+                // 농업정보 포털 카테고리인 경우 특별한 렌더링
+                if (term.category === 'agriculture_portal' && term.website) {
+                    row.innerHTML = `
+                        <td class="khmer-cell">${term.khmer}</td>
+                        <td>${term.pronunciation_ko}</td>
+                        <td class="ko-cell">
+                            <strong>${term.meaning_ko}</strong>
+                            ${term.description ? `<br><small style="color: #666;">${term.description}</small>` : ''}
+                        </td>
+                        <td class="en-cell">
+                            <strong style="color: #2E7D32;">${term.meaning_en || ''}</strong>
+                        </td>
+                        <td>
+                            <a href="${term.website}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+                                🌐 방문하기
+                            </a>
+                        </td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td class="khmer-cell">${term.khmer}</td>
+                        <td>${term.pronunciation_ko}</td>
+                        <td class="ko-cell">${term.meaning_ko}</td>
+                        <td class="en-cell" style="color: #2E7D32; font-weight: 500;">${term.meaning_en || ''}</td>
+                        <td>${categories[term.category].name}</td>
+                    `;
+                }
+                
+                row.onclick = () => handleTermSelect(term);
+                elements.resultsBody.appendChild(row);
+            });
+
+            const totalCount = (state.currentCategory === 'all') ? allTerms.length : allTerms.filter(v => v.category === state.currentCategory).length;
+            elements.resultsCount.textContent = `검색 결과: ${terms.length}개 / '${categories[state.currentCategory].name}' 총 ${totalCount}개`;
+        };
+
+        const renderPaginationControls = () => {
+            elements.paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(state.currentFilteredTerms.length / state.itemsPerPage);
+            
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '이전';
+            prevBtn.disabled = state.currentPage === 1;
+            prevBtn.onclick = () => {
+                state.currentPage--;
+                renderTableAndPagination();
+            };
+
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'page-info';
+            pageInfo.textContent = `${state.currentPage} / ${totalPages}`;
+
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = '다음';
+            nextBtn.disabled = state.currentPage === totalPages;
+            nextBtn.onclick = () => {
+                state.currentPage++;
+                renderTableAndPagination();
+            };
+
+            elements.paginationContainer.append(prevBtn, pageInfo, nextBtn);
+        };
+        
+        const renderFlashcard = (term) => {
+            if (!term) {
+                elements.flashcard.innerHTML = '<div style="text-align: center; color: #666; padding: 40px;">농업용어를 선택해주세요.</div>';
+                return;
+            }
+            elements.flashcard.classList.remove('flipped');
+            
+            // 농업정보 포털인 경우 특별한 카드 렌더링
+            if (term.category === 'agriculture_portal' && term.website) {
+                elements.flashcard.innerHTML = `
+                    <div class="quiz-card-inner">
+                        <div class="quiz-card-front">
+                            <div class="term-khmer">${term.khmer}<span class="tts-icon" onclick="event.stopPropagation(); speak('${term.khmer}')">🔊</span></div>
+                            <div class="term-pronunciation">[${term.pronunciation_ko}]</div>
+                            <div class="term-category">🌐 ${categories[term.category].name}</div>
+                        </div>
+                        <div class="quiz-card-back">
+                            <div class="term-meaning-ko">🏛️ ${term.meaning_ko}</div>
+                            <div class="term-meaning-en" style="color: #2E7D32; font-weight: 500; margin-top: 8px;">🇺🇸 ${term.meaning_en || ''}</div>
+                            ${term.description ? `<div style="font-size: 0.9em; color: #666; margin: 10px 0;">${term.description}</div>` : ''}
+                            <div style="margin-top: 15px;">
+                                <a href="${term.website}" target="_blank" 
+                                   style="background: var(--primary-color); color: white; padding: 8px 16px; 
+                                          text-decoration: none; border-radius: 8px; font-size: 0.9em;"
+                                   onclick="event.stopPropagation();">
+                                    🌐 웹사이트 방문
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                elements.flashcard.innerHTML = `
+                    <div class="quiz-card-inner">
+                        <div class="quiz-card-front">
+                            <div class="term-khmer">${term.khmer}<span class="tts-icon" onclick="event.stopPropagation(); speak('${term.khmer}')">🔊</span></div>
+                            <div class="term-pronunciation">[${term.pronunciation_ko}]</div>
+                            <div class="term-category">${categories[term.category].name}</div>
+                        </div>
+                        <div class="quiz-card-back">
+                            <div class="term-meaning-ko">🇰🇷 ${term.meaning_ko}</div>
+                            <div class="term-meaning-en" style="color: #2E7D32; font-weight: 500; margin-top: 8px;">🇺🇸 ${term.meaning_en || ''}</div>
+                            <div class="term-category" style="margin-top: 10px;">${categories[term.category].name}</div>
+                            <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                                💡 클릭하여 예문 확인
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        const renderExamples = (term) => {
+            let content = '';
+            
+            if (!term) {
+                content = '<div class="no-examples">농업용어를 선택하여 예문을 보세요.</div>';
+            } else if (term.category === 'agriculture_portal' && term.website) {
+                // 농업정보 포털인 경우 웹사이트 정보 표시
+                content = `
+                    <div class="example-item" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.1em; font-weight: 600; color: var(--primary-color); margin-bottom: 10px;">
+                            🏛️ ${term.meaning_ko}
+                        </div>
+                        ${term.description ? `<div style="margin-bottom: 12px; color: #666;">${term.description}</div>` : ''}
+                        <div style="margin-bottom: 10px;">
+                            <strong>웹사이트:</strong> 
+                            <a href="${term.website}" target="_blank" style="color: var(--primary-color);">${term.website}</a>
+                        </div>
+                        <div style="font-size: 0.9em; color: #888;">
+                            📌 이 기관은 캄보디아 농업 발전에 중요한 역할을 하고 있습니다.
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 일반 농업용어인 경우 예문 표시
+                const exampleList = examples[term.id];
+                if (exampleList && exampleList.length > 0) {
+                    content = exampleList.map(ex => `
+                        <div class="example-item">
+                            <div class="example-kh">${ex.example_kh}<span class="tts-icon" onclick="speak('${ex.example_kh}')">🔊</span></div>
+                            <div class="example-pron">[${ex.example_pron}]</div>
+                            <div class="example-ko">🇰🇷 ${ex.example_ko}</div>
+                            <div class="example-en" style="color: #2E7D32; font-weight: 500; margin-top: 5px;">🇺🇸 ${ex.example_en}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    content = `<div class="no-examples">"${term.meaning_ko}"의 예문이 준비 중입니다.</div>`;
+                }
+            }
+            
+            elements.exampleDisplayArea.innerHTML = content;
+        };
+
+        const handleCategoryClick = (key) => {
+            state.currentCategory = key;
+            elements.searchInput.value = '';
+            state.currentPage = 1;
+            updateAndRender();
+        };
+
+        const handleTermSelect = (term) => {
+            state.selectedTerm = term;
+            renderTermsTable(state.currentFilteredTerms);
+            renderFlashcard(term);
+            renderExamples(term);
+            
+            // 학습 카운트 증가
+            state.todayLearnedCount++;
+            saveLocalStats();
+            updateStatsDisplay();
+            
+            if (window.innerWidth < 992) {
+                 document.querySelector('.quiz-area-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+        
+        const updateFilteredTerms = () => {
+            const query = elements.searchInput.value.toLowerCase().trim();
+            const categoryTerms = (state.currentCategory === 'all') ? allTerms : allTerms.filter(v => v.category === state.currentCategory);
+            state.currentFilteredTerms = query ? categoryTerms.filter(v => 
+                v.khmer.toLowerCase().includes(query) || v.pronunciation_ko.includes(query) ||
+                v.meaning_ko.includes(query) || categories[v.category].name.includes(query)
+            ) : categoryTerms;
+        };
+        
+        const renderTableAndPagination = () => {
+            renderTermsTable(state.currentFilteredTerms);
+            renderPaginationControls();
+        };
+
+        const startNewFlashcard = () => {
+            if (state.currentFilteredTerms.length > 0) {
+                const randomTerm = state.currentFilteredTerms[Math.floor(Math.random() * state.currentFilteredTerms.length)];
+                handleTermSelect(randomTerm);
+            } else {
+                handleTermSelect(null);
+            }
+        };
+
+        const startNewInteractiveQuiz = () => {
+            elements.feedback.textContent = '';
+            elements.answerInput.value = '';
+            if (state.currentFilteredTerms.length === 0) {
+                elements.interactiveQuestion.textContent = '문제를 만들 농업용어가 없습니다.';
+                state.currentInteractiveQuizTerm = null;
+                return;
+            }
+            state.currentInteractiveQuizTerm = state.currentFilteredTerms[Math.floor(Math.random() * state.currentFilteredTerms.length)];
+            elements.interactiveQuestion.textContent = `"${state.currentInteractiveQuizTerm.meaning_ko}" 뜻을 가진 농업용어는?`;
+        };
+        
+        const checkInteractiveAnswer = () => {
+            if (!state.currentInteractiveQuizTerm) return;
+            const userAnswer = elements.answerInput.value.trim();
+            const correctAnswer = state.currentInteractiveQuizTerm.khmer;
+            if (userAnswer === correctAnswer) {
+                elements.feedback.innerHTML = `정답! <span class="term-khmer" style="font-size:1.2em">${correctAnswer}</span>`;
+                elements.feedback.className = 'feedback correct';
+                speak(correctAnswer);
+                setTimeout(startNewInteractiveQuiz, 2000);
+            } else {
+                elements.feedback.textContent = `오답입니다. 다시 시도해보세요.`;
+                elements.feedback.className = 'feedback incorrect';
+            }
+        };
+        
+        const updateAndRender = () => {
+            if (elements.searchInput === document.activeElement) {
+                state.currentPage = 1;
+            }
+            updateFilteredTerms();
+            renderCategoryButtons();
+            renderTableAndPagination();
+            startNewInteractiveQuiz();
+
+            if (!state.selectedTerm || !state.currentFilteredTerms.some(v => v.id === state.selectedTerm.id)) {
+                if (state.currentFilteredTerms.length > 0) {
+                    handleTermSelect(state.currentFilteredTerms[0]);
+                } else {
+                    handleTermSelect(null);
+                }
+            } else {
+                const newlyFilteredSelected = state.currentFilteredTerms.find(v => v.id === state.selectedTerm.id);
+                if(newlyFilteredSelected) {
+                    handleTermSelect(newlyFilteredSelected);
+                } else if (state.currentFilteredTerms.length > 0) {
+                    handleTermSelect(state.currentFilteredTerms[0]);
+                } else {
+                    handleTermSelect(null);
+                }
+            }
+        };
+
+        // Event Listeners
+        elements.searchInput.addEventListener('input', updateAndRender);
+        elements.newFlashcardBtn.addEventListener('click', startNewFlashcard);
+        elements.checkAnswerBtn.addEventListener('click', checkInteractiveAnswer);
+        elements.answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkInteractiveAnswer();
+        });
+        document.querySelector('#interactive-quiz-panel h2').addEventListener('click', startNewInteractiveQuiz);
+        elements.flashcard.addEventListener('click', () => {
+            if (state.selectedTerm) {
+                elements.flashcard.classList.toggle('flipped');
+            }
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalStats();
+            updateAndRender();
+        });
+    </script>
+</body>
+</html>

@@ -34,6 +34,16 @@ def mobile_app():
     """모바일 학습 앱 메인 페이지"""
     return render_template('mobile_learning_app.html')
 
+@app.route('/mobile/improved')
+def improved_mobile_app():
+    """개선된 모바일 학습 앱"""
+    return render_template('improved_mobile_app.html')
+
+@app.route('/mobile/v3')
+def agricultural_learning_v3():
+    """참조 파일 기반 농업용어 학습 앱 V3"""
+    return render_template('agricultural_learning_v3.html')
+
 @app.route('/api/daily_words')
 def api_daily_words():
     """일일 학습 단어 API"""
@@ -51,6 +61,41 @@ def api_daily_words():
             'words': words,
             'total_count': len(words)
         })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/daily-words/<int:day>')
+def api_daily_words_improved(day):
+    """개선된 일일 학습 단어 API"""
+    try:
+        # 일일 단어 가져오기 (10개)
+        words = enhanced_manager.get_daily_words(day, 10)
+        
+        # 개선된 앱에 맞는 형식으로 변환
+        formatted_words = []
+        for word in words:
+            formatted_word = {
+                'id': word.get('id'),
+                'korean': word.get('korean_term', ''),
+                'khmer': word.get('khmer_term', ''),
+                'pronunciation': word.get('khmer_pronunciation', ''),
+                'category': word.get('category', ''),
+                'definition_ko': word.get('korean_definition', ''),
+                'definition_km': word.get('khmer_definition', ''),
+                'example_ko': word.get('korean_example', ''),
+                'example_km': word.get('khmer_example', ''),
+                'example_pronunciation': word.get('khmer_example_pronunciation', ''),
+                'frequency': word.get('frequency_level', 3),
+                'difficulty': word.get('difficulty_level', '중급'),
+                'tags': word.get('tags', [])
+            }
+            formatted_words.append(formatted_word)
+        
+        return jsonify(formatted_words)
         
     except Exception as e:
         return jsonify({
@@ -363,4 +408,4 @@ if __name__ == '__main__':
     print("📊 API 문서: http://localhost:5000/api/learning_statistics")
     
     # Flask 앱 실행
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=False)
