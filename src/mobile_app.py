@@ -53,6 +53,11 @@ def agricultural_learning_v3_5000():
 def agricultural_learning_v3_5000_optimized():
     """5,000개 농업용어 학습 앱 V3 (성능 최적화)"""
     return render_template('agricultural_learning_v3_5000_optimized.html')
+
+@app.route('/agri-search')
+def agri_search():
+    """Agri-Search: 캄보디아 농업용어 검색 시스템"""
+    return send_from_directory(os.path.dirname(app.root_path), 'Agri-search.html')
 @app.route('/api/daily_words')
 def api_daily_words():
     """일일 학습 단어 API"""
