@@ -44,6 +44,15 @@ def agricultural_learning_v3():
     """참조 파일 기반 농업용어 학습 앱 V3"""
     return render_template('agricultural_learning_v3.html')
 
+@app.route('/mobile/v3/5000')
+def agricultural_learning_v3_5000():
+    """5,000개 농업용어 학습 앱 V3"""
+    return render_template('agricultural_learning_v3_5000.html')
+
+@app.route('/mobile/v3/5000/optimized') 
+def agricultural_learning_v3_5000_optimized():
+    """5,000개 농업용어 학습 앱 V3 (성능 최적화)"""
+    return render_template('agricultural_learning_v3_5000_optimized.html')
 @app.route('/api/daily_words')
 def api_daily_words():
     """일일 학습 단어 API"""
